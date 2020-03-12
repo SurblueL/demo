@@ -13,7 +13,7 @@ export interface IProps {
 }
 
 const initialState = {
-  tabKey: 'template',
+  tabKey: 'template', // 1
   menu: [
     {
       title: '模板设置',
