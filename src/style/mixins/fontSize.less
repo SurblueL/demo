@@ -1,0 +1,7 @@
+.generate-fs(20);
+.generate-fs(@n, @i: 1) when (@i =< @n) {
+  .fs-@{i} {
+    font-size:(1px*@i) !important;
+  }
+  .generate-fs(@n, (@i + 1));
+}
