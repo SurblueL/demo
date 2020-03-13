@@ -1,54 +1,13 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Card, Row, Col, Form, Button, Select, Modal } from 'antd';
+import { Card, Row, Col, Form, Button, Select, Modal, Icon, Tooltip } from 'antd';
 import { FormComponentProps } from 'antd/es/form';
+import { getTemplat } from './service';
 import router from 'umi/router';
 
 import styles from './index.less';
 
 const { Option } = Select;
-
-const initialState = {
-  nodeList: [{ lable: '节点一', value: 1 }],
-  typeList: [{ lable: '类型一', value: 1 }],
-  activeData: [
-    {
-      id: 1,
-      title: '双十二拼团砍价',
-      inTheLasDays: 42,
-      Total: 4235,
-      recommended: true,
-      spellGroup: true,
-    },
-    {
-      id: 2,
-      title: '双十二拼团砍价',
-      inTheLasDays: 42,
-      Total: 4235,
-      recommended: true,
-      spellGroup: true,
-    },
-    {
-      id: 3,
-      title: '双十二拼团砍价',
-      inTheLasDays: 42,
-      Total: 4235,
-      recommended: true,
-      spellGroup: true,
-    },
-    {
-      id: 4,
-      title: '双十二拼团砍价',
-      inTheLasDays: 42,
-      Total: 4235,
-      recommended: true,
-      spellGroup: true,
-    },
-  ],
-  visible: false,
-};
-
 export interface IProps extends FormComponentProps {}
-
 interface IState {
   nodeList: ISelect[];
   typeList: ISelect[];
@@ -69,9 +28,30 @@ interface IActiveItem {
 }
 
 class TableList extends PureComponent<IProps, IState> {
-  readonly state: IState = initialState;
+  // readonly state: IState = initialState;
+  constructor(props: IProps) {
+    super(props);
+    this.state = {
+      nodeList: [{ lable: '节点一', value: 1 }],
+      typeList: [{ lable: '类型一', value: 1 }],
+      activeData: [],
+      visible: false,
+    };
+  }
 
-  private handleSearch = () => {};
+  componentDidMount() {
+    this.getTemplat();
+  }
+
+  private getTemplat = () => {
+    getTemplat().then(res => {
+      this.setState({
+        activeData: res.data.activeData,
+      });
+    });
+  };
+
+  // private handleSearch = () => {};
 
   private getAllFilter = (filter: any) => {
     const dom =
@@ -106,7 +86,11 @@ class TableList extends PureComponent<IProps, IState> {
           )}
         </Form.Item>
         <Form.Item colon={false}>
-          <Button type="primary" className="mr-8 ml-14" onClick={this.handleSearch}>
+          <Button
+            type="primary"
+            className="mr-8 ml-14"
+            // onClick={this.handleSearch}
+          >
             查询
           </Button>
         </Form.Item>
@@ -121,44 +105,53 @@ class TableList extends PureComponent<IProps, IState> {
       activeData.map((item: IActiveItem) => {
         const { id, title, inTheLasDays, Total, recommended, spellGroup } = item;
         return (
-          <Card
-            key={id}
-            className={styles.cardItem}
-            hoverable
-            style={{ width: 240 }}
-            cover={
-              <div className={styles.imageWrap}>
-                <img
-                  src="https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png"
-                  alt="d"
-                  className="imageCover"
-                />
-                <div className={styles.preview}>
-                  <Button type="dashed" onClick={() => this.handlePreview(id)}>
-                    预览
-                  </Button>
+          <Col span={6}>
+            <Card
+              key={id}
+              className={styles.cardItem}
+              hoverable
+              cover={
+                <div className={styles.imageWrap}>
+                  <img
+                    className="imageCover"
+                    alt="example"
+                    src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                  />
+                  <div className={styles.preview}>
+                    <Button type="dashed">
+                      {/* TODO:替换为二维码图片 */}
+                      预览
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            }
-          >
-            <div className={styles.cardInfo}>
-              <div>
-                <div className={styles.title}>{title}</div>
-                <div>{spellGroup && <div className={styles.booking}>拼团</div>}</div>
-              </div>
-              <div>
-                <div className="mt-5">{Total}</div>
-              </div>
-              <div className={styles.activeBottom}>
-                <div className={styles.inTheLasDays}>最近30天：{inTheLasDays}</div>
+              }
+              actions={[
+                <Tooltip placement="top" title="置顶">
+                  <Icon type="up" />
+                </Tooltip>,
+                <Tooltip placement="top" title="编辑">
+                  <Icon type="edit" key="edit" />
+                </Tooltip>,
+                <Tooltip placement="top" title="数据">
+                  <Icon type="profile" />
+                </Tooltip>,
+                <Tooltip placement="top" title="删除">
+                  <Icon type="delete" key="delete" />
+                </Tooltip>,
+              ]}
+            >
+              <div className={styles.cardInfo}>
                 <div>
-                  <Button type="primary" onClick={() => this.createActive(id)}>
-                    创建活动
-                  </Button>
+                  <div className={styles.title}>{title}</div>
+                  <div>{spellGroup && <div className={styles.booking}>拼团</div>}</div>
+                </div>
+                <div className="mt-10">
+                  <div>{Total}</div>
+                  <div className={styles.inTheLasDays}>最近30天：{inTheLasDays}</div>
                 </div>
               </div>
-            </div>
-          </Card>
+            </Card>
+          </Col>
         );
       });
     return node;
@@ -166,13 +159,6 @@ class TableList extends PureComponent<IProps, IState> {
 
   private createActive = (id: string | number) => {
     router.push(`/template/create/${id}`);
-  };
-
-  private handlePreview = (id: string | number) => {
-    this.setState({ visible: true }, () => {
-      // eslint-disable-next-line no-console
-      // console.log(id);
-    });
   };
 
   render() {
@@ -184,11 +170,27 @@ class TableList extends PureComponent<IProps, IState> {
             <Card className={styles.condition} title={this.setSeach()} />
           </Col>
           <Col span={24} className={styles.activeWrap}>
-            {this.setActiveCard()}
+            <Row className={styles.addRowWrap} gutter={[16, 16]}>
+              <Col className={styles.addWrap} span={6}>
+                <Button
+                  className={styles.addTemplate}
+                  type="dashed"
+                  size="large"
+                  icon="plus"
+                  ghost
+                  onClick={() => {
+                    this.setState({ visible: true });
+                  }}
+                >
+                  新增模板
+                </Button>
+              </Col>
+              {this.setActiveCard()}
+            </Row>
           </Col>
         </Row>
         <Modal
-          title="模板预览"
+          title="选择模板类型"
           visible={visible}
           // onOk={this.handleOk}
           onCancel={() => {
@@ -196,9 +198,24 @@ class TableList extends PureComponent<IProps, IState> {
           }}
           footer={null}
         >
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-          <p>Some contents...</p>
+          <Card
+            style={{ width: 300 }}
+            cover={
+              <img
+                alt="example"
+                src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+              />
+            }
+            // actions={[
+            //   <Icon type="edit" key="edit" />,
+
+            // ]}
+          >
+            <div className={styles.booking}>拼团</div>
+            <Button type="primary" className="mr-8 ml-14">
+              立即应用
+            </Button>
+          </Card>
         </Modal>
       </Fragment>
     );
