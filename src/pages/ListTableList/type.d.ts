@@ -33,7 +33,7 @@ export interface INode {
 export interface DustbinState {
   accept: string[];
   lastDroppedItem?: IContent;
-  collectFormData?: any;
+  // collectFormData?: any;
 }
 
 export interface ICollectType {
@@ -43,7 +43,7 @@ export interface ICollectType {
 export interface IDustbinState {
   accept: string[];
   lastDroppedItem?: IContent;
-  collectFormData?: any;
+  // collectFormData?: any;
 }
 
 export interface GridProps {

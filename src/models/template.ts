@@ -1,10 +1,15 @@
 import { Reducer } from 'redux';
-import { concat } from 'lodash';
+import { concat, some, remove, cloneDeep } from 'lodash';
 
 // import { Effect } from 'dva';
 
 export interface TemplateModelState {
-  collectFormData: any;
+  collectFormData: TemplateModelItem[];
+}
+
+export interface TemplateModelItem {
+  type: string;
+  data: { [key: string]: any };
 }
 
 export interface TemplateType {
@@ -22,7 +27,7 @@ const TemplateModel: TemplateType = {
   namespace: 'template',
 
   state: {
-    collectFormData: {},
+    collectFormData: [],
   },
 
   //   effects: {
@@ -36,11 +41,16 @@ const TemplateModel: TemplateType = {
 
   reducers: {
     handleCollect(state, { payload }) {
-      const setPayload = concat(state.collectFormData, payload);
-      // console.log(state, payload);
+      const { collectFormData } = state;
+      const newCollectFormData = cloneDeep(collectFormData);
+      const isExist = some(collectFormData, ['type', payload.type]);
+      if (isExist) {
+        remove(newCollectFormData, (item: TemplateModelItem) => {
+          return item.type === payload.type;
+        });
+      }
       return {
-        // ...state,
-        collectFormData: setPayload,
+        collectFormData: concat(newCollectFormData, payload),
       };
     },
   },

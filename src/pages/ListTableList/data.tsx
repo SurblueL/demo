@@ -2,7 +2,7 @@ import React from 'react';
 import { IBoxesState, INode, ITabChild } from './type.d';
 import {
   ImageAds,
-  // GeneralIntroduction,
+  GeneralIntroduction,
   // Bargain,
   // ContactInformation,
   // FriendsHelp,
@@ -14,7 +14,7 @@ import {
 } from './components/FormCollect/ModuleSetting/index';
 import {
   ImageAdsPreview,
-  // GeneralIntroductionPreview,
+  GeneralIntroductionPreview,
   // BargainPreview,
   // ContactInformationPreview,
   // FriendsHelpPreview,
@@ -25,6 +25,11 @@ import {
   // VotePreview,
 } from './components/Preview/index';
 
+const ModuleType: { [key: string]: string } = {
+  image_ads: 'image_ads',
+  general_introduction: 'general_introduction',
+  group: 'group',
+};
 const ModuleData: IBoxesState[] = [
   {
     type: 'temlate',
@@ -35,14 +40,14 @@ const ModuleData: IBoxesState[] = [
         id: 1,
         name: '图片广告',
         icon: 'smail',
-        type: 'image_ads',
+        type: ModuleType.image_ads,
         // tabList: [],
       },
       {
         id: 2,
         name: '通用介绍',
         icon: 'smail',
-        type: 'General_introduction',
+        type: ModuleType.general_introduction,
         // tabList: [],
       },
       // {
@@ -70,7 +75,7 @@ const ModuleData: IBoxesState[] = [
         id: 5,
         name: '多人拼团',
         icon: 'smail',
-        type: 'group',
+        type: ModuleType.group,
         // tabList: [
         //   {
         //     key: 'merchandiseNews',
@@ -124,14 +129,14 @@ const ModuleData: IBoxesState[] = [
 // 表单
 const ModuleCollect: INode = {
   image_ads: (tabKey: string) => <ImageAds key={tabKey} />,
-  General_introduction: (tabKey: string) => <ImageAds key={tabKey} />,
+  general_introduction: (tabKey: string) => <GeneralIntroduction key={tabKey} />,
   group: (tabKey: string) => <ImageAds key={tabKey} />,
 };
 
 // 预览
 const ModulePreview: INode = {
   image_ads: () => <ImageAdsPreview />,
-  General_introduction: () => <ImageAdsPreview />,
+  general_introduction: () => <GeneralIntroductionPreview />,
   group: () => <ImageAdsPreview />,
 };
 
@@ -140,7 +145,7 @@ const ModuleTabChild: ITabChild = {
     title: '图片广告',
     tabList: [],
   },
-  General_introduction: {
+  general_introduction: {
     title: '通用介绍',
     tabList: [],
   },
@@ -159,4 +164,4 @@ const ModuleTabChild: ITabChild = {
   },
 };
 
-export { ModuleData, ModuleCollect, ModulePreview, ModuleTabChild };
+export { ModuleData, ModuleCollect, ModulePreview, ModuleTabChild, ModuleType };

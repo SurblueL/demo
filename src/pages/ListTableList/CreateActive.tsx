@@ -7,23 +7,25 @@ import { DndProvider } from 'react-dnd';
 import update from 'immutability-helper';
 import { isEqual, without } from 'lodash';
 import { ConnectProps, ConnectState } from '@/models/connect';
-import { ModuleData } from './data';
+import { TemplateModelItem } from '@/models/template';
+import { ModuleData, ModulePreview } from './data';
 import DustbinItem from './components/DustbinItem';
 import GridBox from './components/GridBox';
 import ConfigurationTab from './ConfigurationTab';
+
 import { IBoxesState, IChildren, IDustbinState } from './type.d';
 
 import styles from './index.less';
 
 const { Sider } = Layout;
 export interface IProps extends ConnectProps {
-  collectFormData: any;
+  collectFormData: TemplateModelItem[];
 }
 
 interface IState {
   dustbins: IDustbinState[]; // 用作容器的元素 盛放被拖拽元素
   boxes: IBoxesState[]; // 可被拖拽的元素
-  droppedBoxTypes: string[]; // 已经被拖拽过的元素的name集合
+  droppedBoxTypes: string[]; // 已经被拖拽过的元素的type集合
   checkedType: string; // 正在被选中的容器的type
   // collectData: any;
   // data: any; // dva 点击预览后的得到的数据
@@ -43,41 +45,33 @@ class CreateActive extends PureComponent<IProps, IState> {
   componentDidUpdate(prevProps: IProps) {
     const { collectFormData } = prevProps;
     if (isEqual(collectFormData, this.props.collectFormData)) {
-      this.handleCollect(this.props.collectFormData);
+      // this.handleCollect(this.props.collectFormData);
     }
   }
 
-  private handleCollect = (collectFormData: any) => {
-    const { dustbins } = this.state;
-    dustbins.map((item: IDustbinState, index: number) => {
-      if (item.accept[0] === collectFormData.type) {
-        this.setState({
-          dustbins: update(dustbins, {
-            [index]: {
-              collectFormData: {
-                $set: item,
-              },
-            },
-          }),
-        });
-      }
-      return null;
-    });
-  };
-
-  // 判断是否被拖拽过
-  private isDropped = (boxName: string) => {
-    const { droppedBoxTypes } = this.state;
-    return droppedBoxTypes.indexOf(boxName) > -1;
-  };
-
-  // 当前选中的容器 选中可编辑表单
-  // private changeCollection = (checkedCollection: DustbinState) => {
-  //   console.log(checkedCollection)
-  //   this.setState({
-  //     checkedCollection,
+  // private handleCollect = (collectFormData: any) => {
+  //   const { dustbins } = this.state;
+  //   dustbins.map((item: IDustbinState, index: number) => {
+  //     if (item.accept[0] === collectFormData.type) {
+  //       this.setState({
+  //         dustbins: update(dustbins, {
+  //           [index]: {
+  //             collectFormData: {
+  //               $set: item,
+  //             },
+  //           },
+  //         }),
+  //       });
+  //     }
+  //     return null;
   //   });
   // };
+
+  // 判断是否被拖拽过
+  private isDropped = (boxType: string) => {
+    const { droppedBoxTypes } = this.state;
+    return droppedBoxTypes.indexOf(boxType) > -1;
+  };
 
   private setCard = () => {
     const { boxes } = this.state;
@@ -99,11 +93,11 @@ class CreateActive extends PureComponent<IProps, IState> {
     const node =
       content &&
       content.map((item: IChildren) => {
-        const { name } = item;
+        const { type } = item;
         return (
           <GridBox
             {...item}
-            isDropped={this.isDropped(name)}
+            isDropped={this.isDropped(type)}
             onDropped={() => this.onDropped(item)}
             droppedBoxTypes={droppedBoxTypes}
           />
@@ -117,8 +111,7 @@ class CreateActive extends PureComponent<IProps, IState> {
     const node =
       dustbins &&
       dustbins.map((dustbinsItem, index) => {
-        const { accept, lastDroppedItem } = dustbinsItem;
-        // console.log(dustbinsItem, checkedCollection);
+        const { accept } = dustbinsItem;
         return (
           <DustbinItem
             accept={accept}
@@ -130,16 +123,16 @@ class CreateActive extends PureComponent<IProps, IState> {
             onUpItem={() => this.onUpItem(index, dustbinsItem)}
             onDownItem={() => this.onDownItem(index, dustbinsItem)}
           >
-            {lastDroppedItem && lastDroppedItem.previewList()}
+            {ModulePreview[accept[0]](checkedType)}
           </DustbinItem>
         );
       });
     return node;
   };
 
+  //  刪除当前容器
   private handleDelect = (index: number, type: string, dustbinsItem: IDustbinState) => {
     const { dustbins, droppedBoxTypes } = this.state;
-    // console.log(dustbinsItem);
     const setDustbins = without(dustbins, dustbinsItem);
     const setDroppedBoxNames = without(droppedBoxTypes, type);
     this.setState({
@@ -148,6 +141,7 @@ class CreateActive extends PureComponent<IProps, IState> {
     });
   };
 
+  // 排序 上移
   private onUpItem = (index: number, dustbinsItem: IDustbinState) => {
     const { dustbins } = this.state;
     const setDustbins = update(dustbins, {
@@ -162,6 +156,7 @@ class CreateActive extends PureComponent<IProps, IState> {
     });
   };
 
+  // 排序 下移
   private onDownItem = (index: number, dustbinsItem: IDustbinState) => {
     const { dustbins } = this.state;
     const setDustbins = update(dustbins, {
@@ -176,7 +171,7 @@ class CreateActive extends PureComponent<IProps, IState> {
     });
   };
 
-  // 元素被拖拽时
+  // 元素被拖拽时 动态创建容器接受垃圾
   private onDropped = (item: IChildren) => {
     const { type } = item;
     const { dustbins } = this.state;
@@ -196,9 +191,9 @@ class CreateActive extends PureComponent<IProps, IState> {
     });
   };
 
-  // 拖拽方法（已经拖拽到容器内） 拖拽后向容器lastDroppedItem注入数据
+  // 拖拽方法（已经拖拽到容器内） 拖拽后向容器记录已被拖拽的元素的type
   private handleDrop = (index: any, item: IChildren, dustbinsItem: IDustbinState) => {
-    const { name, type } = item;
+    const { type } = item;
     const { droppedBoxTypes } = this.state;
     // console.log(item, dustbinsItem);
     // TODO:
@@ -210,7 +205,7 @@ class CreateActive extends PureComponent<IProps, IState> {
     //   },
     // });
 
-    const setDroppedBoxNames = update(droppedBoxTypes, name ? { $push: [name] } : { $push: [] });
+    const setDroppedBoxNames = update(droppedBoxTypes, type ? { $push: [type] } : { $push: [] });
     this.setState({
       // dustbins: setDustbins,
       droppedBoxTypes: setDroppedBoxNames,
@@ -219,6 +214,7 @@ class CreateActive extends PureComponent<IProps, IState> {
     return item;
   };
 
+  // 点击容器 切换当前被选中的垃圾（容器）type
   private dustbinClick = (index: number, type: string) => {
     this.setState({
       checkedType: type,

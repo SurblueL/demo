@@ -1,33 +1,29 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { PureComponent } from 'react';
-import { Form, Button, InputNumber, Input, Radio } from 'antd';
+import { Form, InputNumber, Radio } from 'antd';
 import { connect } from 'dva';
+import { find } from 'lodash';
 import { FormComponentProps } from 'antd/es/form';
 import { ConnectProps, ConnectState } from '@/models/connect';
+import { TemplateModelItem } from '@/models/template';
+import { ModuleType } from '../../../data';
+
 import styles from './index.less';
 
-export interface IProps extends FormComponentProps, ConnectProps {}
+export interface IProps extends FormComponentProps, ConnectProps {
+  collectFormData: TemplateModelItem[];
+}
 
 // const initialState = {};
 interface IState {}
 
 class ImageAds extends PureComponent<IProps, IState> {
-  private handlePreview = () => {
-    const { form, dispatch } = this.props;
-    form.validateFields(async (err, values) => {
-      if (!err) {
-        const imageAds = { type: 'imageAds', data: { ...values } };
-        if (dispatch) {
-          dispatch({
-            type: 'template/handleCollect',
-            payload: imageAds,
-          });
-        }
-      }
-    });
-  };
-
   render() {
+    const { collectFormData } = this.props;
+    const data: TemplateModelItem | undefined = find(
+      collectFormData,
+      item => item.type === 'image_ads',
+    );
     const {
       form: { getFieldDecorator },
     } = this.props;
@@ -46,11 +42,11 @@ class ImageAds extends PureComponent<IProps, IState> {
       <Form className={styles.searchRight} {...formItemLayout}>
         <Form.Item label="海报类型">
           {getFieldDecorator('template_name', {
-            initialValue: 1,
+            initialValue: (data && data.data.template_name) || 'single poster',
           })(
             <Radio.Group>
-              <Radio value={1}>单张海报</Radio>
-              <Radio value={2}>轮播海报</Radio>
+              <Radio value="single poster">单张海报</Radio>
+              <Radio value="poster">轮播海报</Radio>
             </Radio.Group>,
           )}
         </Form.Item>
@@ -70,22 +66,8 @@ class ImageAds extends PureComponent<IProps, IState> {
         </Form.Item> */}
         <Form.Item label="切换间隔">
           {getFieldDecorator('switching_interval', {
-            initialValue: 3,
+            initialValue: (data && data.data.switching_interval) || 3,
           })(<InputNumber min={1} max={10} />)}
-        </Form.Item>
-        <Form.Item colon={false}>
-          <Button type="primary" className="mr-8 ml-14" onClick={this.handlePreview}>
-            预览
-          </Button>
-          <Button
-            type="primary"
-            className="mr-8 ml-14"
-            // onClick={
-            //     // this.handleSubmit
-            // }
-          >
-            保存
-          </Button>
         </Form.Item>
       </Form>
     );
@@ -96,4 +78,28 @@ class ImageAds extends PureComponent<IProps, IState> {
 
 export default connect(({ template }: ConnectState) => ({
   collectFormData: template.collectFormData,
-}))(Form.create()(ImageAds));
+}))(
+  Form.create({
+    onFieldsChange(props, changedFields, allFields) {
+      // 表单域改变时触发actions方法，控制isEdit为true
+      const { dispatch } = props;
+      // console.log(props, changedFields, allFields);
+      const imageAds = {
+        type: ModuleType.image_ads,
+        data: {
+          // template_name: pick(allFields.template_name, ['name', 'value']),
+          template_name: allFields.template_name.value,
+          // switching_interval: pick(allFields.switching_interval, ['name', 'value']),
+          switching_interval: allFields.switching_interval.value,
+        },
+      };
+      // console.log(imageAds);
+      if (dispatch) {
+        dispatch({
+          type: 'template/handleCollect',
+          payload: imageAds,
+        });
+      }
+    },
+  })(ImageAds),
+);
