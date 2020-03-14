@@ -137,7 +137,7 @@ export default {
                   hideInMenu: true,
                 },
                 {
-                  path: '/template/create/:id',
+                  path: '/template/create/:id&&:type?',
                   component: './ListTableList/CreateActive',
                   hideInMenu: true,
                 },

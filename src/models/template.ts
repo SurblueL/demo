@@ -7,9 +7,29 @@ export interface TemplateModelState {
   collectFormData: TemplateModelItem[];
 }
 
+/**
+ * @TemplateModelItem
+ * [
+ * { 
+ *    type:'image_ads',
+ *    data:{pic:'xxx',a:'xxx',...}
+ * },{
+ *     type:'group',   // 拼团等有多个tab数据时的数据结构
+ *      data:[
+ *        {merchandiseNews:{a:'xxx',b:'xxx'}}
+ *        {rules:{a:'xxx',b:'xxx'}}
+ *        {registration:{a:'xxx',b:'xxx'}}
+ *          ]
+ * }
+ * ]
+ * 
+ */
 export interface TemplateModelItem {
   type: string;
-  data: { [key: string]: any };
+  data: { [key: string]: any } | ITabsData[];
+}
+interface ITabsData {
+  [key: string]: any
 }
 
 export interface TemplateType {

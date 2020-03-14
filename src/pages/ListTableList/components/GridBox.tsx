@@ -21,21 +21,12 @@ const gridStyle = {
 };
 
 const GridBox: React.FC<GridProps> = props => {
-  // console.log(props.droppedBoxTypes, props.name, !(indexOf(props.droppedBoxTypes, props.name) > -1));
   const { isDropped, name, onDropped, droppedBoxTypes } = props;
   const [{ opacity, cursor }, drag] = useDrag({
     item: { ...props },
-    // begin: monitor => ({
-    //   ...props,
-    // }),
-    // drop: onDropped,
     begin() {
       onDropped(props);
     },
-    
-    // end(){
-    //   onDropped(props);
-    // },
     canDrag: !(indexOf(droppedBoxTypes, name) > -1),
     collect: monitor => ({
       opacity: monitor.isDragging() ? 0.4 : 1,

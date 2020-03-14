@@ -1,8 +1,9 @@
 import React, { PureComponent, Fragment } from 'react';
-import { Card, Row, Col, Form, Button, Select, Modal, Icon, Tooltip } from 'antd';
+import { Card, Row, Col, Form, Button, Select, Icon, Tooltip } from 'antd';
 import { FormComponentProps } from 'antd/es/form';
-import { getTemplat } from './service';
-import router from 'umi/router';
+import { getTemplate } from './service';
+import { IActiveItem, ISelect } from './type.d';
+import SelectTemplateType from './components/SelectTemplateType';
 
 import styles from './index.less';
 
@@ -13,18 +14,6 @@ interface IState {
   typeList: ISelect[];
   activeData: IActiveItem[];
   visible: boolean;
-}
-interface ISelect {
-  lable: string;
-  value: string | number;
-}
-interface IActiveItem {
-  id: string | number;
-  title: string;
-  inTheLasDays: number;
-  Total: number;
-  recommended: boolean;
-  spellGroup: boolean;
 }
 
 class TableList extends PureComponent<IProps, IState> {
@@ -40,14 +29,16 @@ class TableList extends PureComponent<IProps, IState> {
   }
 
   componentDidMount() {
-    this.getTemplat();
+    this.getTemplate();
   }
 
-  private getTemplat = () => {
-    getTemplat().then(res => {
-      this.setState({
-        activeData: res.data.activeData,
-      });
+  private getTemplate = () => {
+    getTemplate().then(res => {
+      if (res) {
+        this.setState({
+          activeData: res.data.activeData,
+        });
+      }
     });
   };
 
@@ -103,7 +94,15 @@ class TableList extends PureComponent<IProps, IState> {
     const node =
       activeData &&
       activeData.map((item: IActiveItem) => {
-        const { id, title, inTheLasDays, Total, recommended, spellGroup } = item;
+        const {
+          id,
+          title,
+          inTheLasDays,
+          total,
+          //  recommended,
+          image,
+          MarketingType,
+        } = item;
         return (
           <Col span={6}>
             <Card
@@ -112,11 +111,7 @@ class TableList extends PureComponent<IProps, IState> {
               hoverable
               cover={
                 <div className={styles.imageWrap}>
-                  <img
-                    className="imageCover"
-                    alt="example"
-                    src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-                  />
+                  <img className="imageCover" alt="example" src={image} />
                   <div className={styles.preview}>
                     <Button type="dashed">
                       {/* TODO:替换为二维码图片 */}
@@ -143,10 +138,12 @@ class TableList extends PureComponent<IProps, IState> {
               <div className={styles.cardInfo}>
                 <div>
                   <div className={styles.title}>{title}</div>
-                  <div>{spellGroup && <div className={styles.booking}>拼团</div>}</div>
+                  <div>
+                    <div className={styles.booking}>{MarketingType}</div>
+                  </div>
                 </div>
                 <div className="mt-10">
-                  <div>{Total}</div>
+                  <div>{total}</div>
                   <div className={styles.inTheLasDays}>最近30天：{inTheLasDays}</div>
                 </div>
               </div>
@@ -155,10 +152,6 @@ class TableList extends PureComponent<IProps, IState> {
         );
       });
     return node;
-  };
-
-  private createActive = (id: string | number) => {
-    router.push(`/template/create/${id}`);
   };
 
   render() {
@@ -189,38 +182,15 @@ class TableList extends PureComponent<IProps, IState> {
             </Row>
           </Col>
         </Row>
-        <Modal
-          title="选择模板类型"
+        <SelectTemplateType
           visible={visible}
-          // onOk={this.handleOk}
           onCancel={() => {
             this.setState({ visible: false });
           }}
-          footer={null}
-        >
-          <Card
-            style={{ width: 300 }}
-            cover={
-              <img
-                alt="example"
-                src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-              />
-            }
-            // actions={[
-            //   <Icon type="edit" key="edit" />,
-
-            // ]}
-          >
-            <div className={styles.booking}>拼团</div>
-            <Button type="primary" className="mr-8 ml-14">
-              立即应用
-            </Button>
-          </Card>
-        </Modal>
+        />
       </Fragment>
     );
   }
 }
 
 export default Form.create()(TableList);
-// export default TableList

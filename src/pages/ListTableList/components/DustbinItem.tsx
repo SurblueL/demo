@@ -1,10 +1,7 @@
 import React, { Children } from 'react';
 import { useDrop } from 'react-dnd';
 import { Icon } from 'antd';
-
 import styles from './DustbinItem.less';
-
-// import { DustbinState } from '../data.d';
 
 const style: React.CSSProperties = {
   height: '12rem',
@@ -21,7 +18,6 @@ const style: React.CSSProperties = {
 
 export interface DustbinProps {
   accept: string[];
-  // lastDroppedItem?: any;
   onDrop: (item: any) => void;
   onClick: (item: any) => void;
   onDelectItem: (item: any) => void;
@@ -34,7 +30,6 @@ export interface DustbinProps {
 const Dustbin: React.FC<DustbinProps> = props => {
   const {
     accept,
-    // lastDroppedItem,
     onDrop,
     onClick,
     isChecked,
@@ -51,11 +46,9 @@ const Dustbin: React.FC<DustbinProps> = props => {
       // 把拖拽过程中需要信息注入组件的 props
       isOver: monitor.isOver(),
       canDrop: monitor.canDrop(),
-      // didDrop: monitor.getDropResult(),
       item: monitor.getItem(),
     }),
   });
-  // console.log(item);
   const isActive = isOver && canDrop;
   let backgroundColor = '#fff';
   let border = 'none';
@@ -70,9 +63,7 @@ const Dustbin: React.FC<DustbinProps> = props => {
     <div className={styles.dustbinItem}>
       <div ref={drop} style={{ ...style, backgroundColor, border }} onClick={onClick}>
         {canDrop && <p>模块放置区域</p>}
-        {/* {didDrop && <p>已经拖拽过来了</p>} */}
         {isChecked && <p>选中：</p>}
-        {/* {lastDroppedItem && <p> {lastDroppedItem.name}</p>} */}
         {children && Children.only(children)}
       </div>
       {isChecked && (

@@ -55,3 +55,24 @@ export interface GridProps {
   onDropped: (item: any) => void;
   droppedBoxTypes: string[];
 }
+
+export interface ISelect {
+  lable: string;
+  value: string | number;
+}
+export interface IActiveItem {
+  id: string | number;
+  title: string;
+  inTheLasDays: number;
+  total: number;
+  recommended: boolean; // 是否推荐
+  MarketingType: string; // 营销类型：拼团、等
+  image: string;
+}
+
+export interface ITemplateTypeItem {
+  id: string | number;
+  title: string;
+  MarketingType: string; // 营销类型：拼团、等
+  image: string;
+}

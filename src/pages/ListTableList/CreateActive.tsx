@@ -12,9 +12,7 @@ import { ModuleData, ModulePreview } from './data';
 import DustbinItem from './components/DustbinItem';
 import GridBox from './components/GridBox';
 import ConfigurationTab from './ConfigurationTab';
-
 import { IBoxesState, IChildren, IDustbinState } from './type.d';
-
 import styles from './index.less';
 
 const { Sider } = Layout;
@@ -27,16 +25,12 @@ interface IState {
   boxes: IBoxesState[]; // 可被拖拽的元素
   droppedBoxTypes: string[]; // 已经被拖拽过的元素的type集合
   checkedType: string; // 正在被选中的容器的type
-  // collectData: any;
-  // data: any; // dva 点击预览后的得到的数据
 }
 const initialState = {
   dustbins: [],
   boxes: ModuleData,
   droppedBoxTypes: [],
   checkedType: '',
-
-  // data: {},
 };
 
 class CreateActive extends PureComponent<IProps, IState> {
@@ -195,19 +189,8 @@ class CreateActive extends PureComponent<IProps, IState> {
   private handleDrop = (index: any, item: IChildren, dustbinsItem: IDustbinState) => {
     const { type } = item;
     const { droppedBoxTypes } = this.state;
-    // console.log(item, dustbinsItem);
-    // TODO:
-    // const setDustbins = update(dustbins, {
-    //   [index]: {
-    //     lastDroppedItem: {
-    //       $set: item,
-    //     },
-    //   },
-    // });
-
     const setDroppedBoxNames = update(droppedBoxTypes, type ? { $push: [type] } : { $push: [] });
     this.setState({
-      // dustbins: setDustbins,
       droppedBoxTypes: setDroppedBoxNames,
       checkedType: type,
     });
@@ -223,8 +206,7 @@ class CreateActive extends PureComponent<IProps, IState> {
 
   render() {
     const { checkedType } = this.state;
-    // console.log(this.props.collectFormData, this.state.dustbins);
-    // const dataSet = concat(boxes[0].content, boxes[1].content);
+    console.log(this.props);
     return (
       <DndProvider backend={Backend}>
         <Layout className={styles.activeLayout}>

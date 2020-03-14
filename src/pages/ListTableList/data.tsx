@@ -30,6 +30,13 @@ const ModuleType: { [key: string]: string } = {
   general_introduction: 'general_introduction',
   group: 'group',
 };
+
+const ModuleTypeZh: { [key: string]: string } = {
+  image_ads: '图片广告',
+  general_introduction: '通用介绍',
+  group: '拼团',
+};
+
 const ModuleData: IBoxesState[] = [
   {
     type: 'temlate',
@@ -66,64 +73,64 @@ const ModuleData: IBoxesState[] = [
       // },
     ],
   },
-  {
-    type: 'marketing',
-    title: '组件设置',
-    icon: 'smail',
-    children: [
-      {
-        id: 5,
-        name: '多人拼团',
-        icon: 'smail',
-        type: ModuleType.group,
-        // tabList: [
-        //   {
-        //     key: 'merchandiseNews',
-        //     tab: '商品信息',
-        //   },
-        //   {
-        //     key: 'rules',
-        //     tab: '拼团规则',
-        //   },
-        // ],
-      },
-      // {
-      //   id: 6,
-      //   name: '砍价',
-      //   icon: 'smail',
-      //   type: 'bargain',
-      //   tabList: [],
-      // },
-      // {
-      //   id: 7,
-      //   name: '好友助力',
-      //   icon: 'smail',
-      //   type: 'help',
-      //   tabList: [],
-      // },
-      // {
-      //   id: 8,
-      //   name: '投票',
-      //   icon: 'smail',
-      //   type: 'vote',
-      //   tabList: [],
-      // },
-      // {
-      //   id: 9,
-      //   name: '微传单',
-      //   icon: 'smail',
-      //   type: 'leaflet',
-      //   tabList: [],
-      // },
-      // {
-      //   id: 10,
-      //   name: '限时折扣',
-      //   icon: 'smail',
-      //   type: 'discount',
-      //   tabList: [],
-      // },
-    ],
-  },
+  // {
+  //   type: 'marketing',
+  //   title: '组件设置',
+  //   icon: 'smail',
+  //   children: [
+  //     {
+  //       id: 5,
+  //       name: '多人拼团',
+  //       icon: 'smail',
+  //       type: ModuleType.group,
+  //       // tabList: [
+  //       //   {
+  //       //     key: 'merchandiseNews',
+  //       //     tab: '商品信息',
+  //       //   },
+  //       //   {
+  //       //     key: 'rules',
+  //       //     tab: '拼团规则',
+  //       //   },
+  //       // ],
+  //     },
+  //     // {
+  //     //   id: 6,
+  //     //   name: '砍价',
+  //     //   icon: 'smail',
+  //     //   type: 'bargain',
+  //     //   tabList: [],
+  //     // },
+  //     // {
+  //     //   id: 7,
+  //     //   name: '好友助力',
+  //     //   icon: 'smail',
+  //     //   type: 'help',
+  //     //   tabList: [],
+  //     // },
+  //     // {
+  //     //   id: 8,
+  //     //   name: '投票',
+  //     //   icon: 'smail',
+  //     //   type: 'vote',
+  //     //   tabList: [],
+  //     // },
+  //     // {
+  //     //   id: 9,
+  //     //   name: '微传单',
+  //     //   icon: 'smail',
+  //     //   type: 'leaflet',
+  //     //   tabList: [],
+  //     // },
+  //     // {
+  //     //   id: 10,
+  //     //   name: '限时折扣',
+  //     //   icon: 'smail',
+  //     //   type: 'discount',
+  //     //   tabList: [],
+  //     // },
+  //   ],
+  // },
 ];
 
 // 表单
@@ -160,8 +167,12 @@ const ModuleTabChild: ITabChild = {
         key: 'rules',
         tab: '拼团规则',
       },
+      {
+        key: 'registration',
+        tab: '报名信息',
+      },
     ],
   },
 };
 
-export { ModuleData, ModuleCollect, ModulePreview, ModuleTabChild, ModuleType };
+export { ModuleData, ModuleCollect, ModuleTypeZh, ModulePreview, ModuleTabChild, ModuleType };
