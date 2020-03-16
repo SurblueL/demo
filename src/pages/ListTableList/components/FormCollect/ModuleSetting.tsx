@@ -7,7 +7,7 @@ import { ICollectType } from '../../type.d';
 interface IProps extends ICollectType {}
 
 const initialState = {
-  tabKey: '',
+  tabKey: 'merchandiseNews',
 };
 interface IState {
   tabKey: string;
@@ -25,10 +25,10 @@ class TemplateSettings extends PureComponent<IProps, IState> {
     const { tabKey } = this.state;
     const { type } = this.props;
     const tabData = ModuleTabChild[type];
-    console.log(ModuleTabChild,type);
+    console.log(ModuleCollect[type]);
     // const {tabList}=tabList
     return (
-        // <div>sss</div>
+      // <div>sss</div>
       <Card
         title={tabData.title}
         tabList={tabData.tabList}

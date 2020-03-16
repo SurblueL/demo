@@ -5,18 +5,21 @@ import Backend from 'react-dnd-html5-backend';
 import { connect } from 'dva';
 import { DndProvider } from 'react-dnd';
 import update from 'immutability-helper';
-import { isEqual, without } from 'lodash';
-import { ConnectProps, ConnectState } from '@/models/connect';
+import { isEqual, without, findIndex, includes } from 'lodash';
+import { ConnectState } from '@/models/connect';
 import { TemplateModelItem } from '@/models/template';
-import { ModuleData, ModulePreview } from './data';
+import qs from 'qs';
+import { RouteComponentProps } from 'react-router';
+import { ModuleData, ModulePreview, ModuleType } from './data';
 import DustbinItem from './components/DustbinItem';
 import GridBox from './components/GridBox';
 import ConfigurationTab from './ConfigurationTab';
 import { IBoxesState, IChildren, IDustbinState } from './type.d';
+
 import styles from './index.less';
 
 const { Sider } = Layout;
-export interface IProps extends ConnectProps {
+export interface IProps extends RouteComponentProps {
   collectFormData: TemplateModelItem[];
 }
 
@@ -27,7 +30,12 @@ interface IState {
   checkedType: string; // 正在被选中的容器的type
 }
 const initialState = {
-  dustbins: [],
+  dustbins: [
+    {
+      // accept: [...Object.values(ModuleType)],
+      accept: ['init'],
+    },
+  ],
   boxes: ModuleData,
   droppedBoxTypes: [],
   checkedType: '',
@@ -35,6 +43,28 @@ const initialState = {
 
 class CreateActive extends PureComponent<IProps, IState> {
   readonly state: IState = initialState;
+
+  componentDidMount() {
+    const { dustbins } = this.state;
+    const query = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
+    const { type } = query;
+    if (type) {
+      const setDustbins = update(dustbins, {
+        $push: [
+          {
+            accept: [type],
+            // lastDroppedItem: undefined,
+            // TODO:当拖拽进行到一半然后取消拖拽时 容器消失 而不是只要拖拽开始后无法停止？？？
+            // lastDroppedItem: item,
+          },
+        ],
+      });
+      this.setState({
+        dustbins: setDustbins,
+        checkedType: type,
+      });
+    }
+  }
 
   componentDidUpdate(prevProps: IProps) {
     const { collectFormData } = prevProps;
@@ -117,7 +147,7 @@ class CreateActive extends PureComponent<IProps, IState> {
             onUpItem={() => this.onUpItem(index, dustbinsItem)}
             onDownItem={() => this.onDownItem(index, dustbinsItem)}
           >
-            {ModulePreview[accept[0]](checkedType)}
+            {ModulePreview[accept[0]] && ModulePreview[accept[0]](checkedType)}
           </DustbinItem>
         );
       });
@@ -168,20 +198,28 @@ class CreateActive extends PureComponent<IProps, IState> {
   // 元素被拖拽时 动态创建容器接受垃圾
   private onDropped = (item: IChildren) => {
     const { type } = item;
-    const { dustbins } = this.state;
-    const setDustbins = update(dustbins, {
-      $push: [
-        {
-          accept: [type],
-          // lastDroppedItem: undefined,
-          // TODO:当拖拽进行到一半然后取消拖拽时 容器消失 而不是只要拖拽开始后无法停止？？？
-          // lastDroppedItem: item,
+    const { dustbins, droppedBoxTypes } = this.state;
+    const index = findIndex(dustbins, i => i.accept[0] === 'init');
+    let setDustbins;
+    if (index > -1) {
+      setDustbins = update(dustbins, {
+        [index]: {
+          accept: {
+            $set: [type],
+          },
         },
-      ],
-    });
+      });
+    } else {
+      setDustbins = update(dustbins, {
+        $splice: [[dustbins.length - 1, 0, { accept: [type] }]],
+      });
+    }
+
+    const setDroppedBoxNames = update(droppedBoxTypes, type ? { $push: [type] } : { $push: [] });
     this.setState({
       dustbins: setDustbins,
-      // checkedType: type,
+      droppedBoxTypes: setDroppedBoxNames,
+      checkedType: type,
     });
   };
 

@@ -6,7 +6,7 @@ import {
   // Bargain,
   // ContactInformation,
   // FriendsHelp,
-  // GroupPurchase,
+  GroupPurchase,
   // InstitutionAddress,
   // Promotion,
   // TinyLeaflets,
@@ -18,7 +18,7 @@ import {
   // BargainPreview,
   // ContactInformationPreview,
   // FriendsHelpPreview,
-  // GroupPurchasePreview,
+  GroupPurchasePreview,
   // InstitutionAddressPreview,
   // PromotionPreview,
   // TinyLeafletsPreview,
@@ -28,6 +28,8 @@ import {
 const ModuleType: { [key: string]: string } = {
   image_ads: 'image_ads',
   general_introduction: 'general_introduction',
+  institution_address: 'institution_address',
+  contact_way: 'contact_way',
   group: 'group',
 };
 
@@ -135,16 +137,16 @@ const ModuleData: IBoxesState[] = [
 
 // 表单
 const ModuleCollect: INode = {
-  image_ads: (tabKey: string) => <ImageAds key={tabKey} />,
-  general_introduction: (tabKey: string) => <GeneralIntroduction key={tabKey} />,
-  group: (tabKey: string) => <ImageAds key={tabKey} />,
+  image_ads: (tabKey: string) => <ImageAds tabKey={tabKey} />,
+  general_introduction: (tabKey: string) => <GeneralIntroduction tabKey={tabKey} />,
+  group: (tabKey: string) => <GroupPurchase tabKey={tabKey} />,
 };
 
 // 预览
 const ModulePreview: INode = {
   image_ads: () => <ImageAdsPreview />,
   general_introduction: () => <GeneralIntroductionPreview />,
-  group: () => <ImageAdsPreview />,
+  group: () => <GroupPurchasePreview />,
 };
 
 const ModuleTabChild: ITabChild = {

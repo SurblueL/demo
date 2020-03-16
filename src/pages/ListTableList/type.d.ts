@@ -27,7 +27,7 @@ export interface ITabChild {
 }
 
 export interface INode {
-  [type: string]: (tabKey: string) => ReactElement | ReactNode;
+  [type: string]: (tabKey: string) => ReactElement<any> | ReactNode<any>;
 }
 
 export interface DustbinState {

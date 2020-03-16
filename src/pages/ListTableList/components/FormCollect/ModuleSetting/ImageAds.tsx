@@ -5,13 +5,14 @@ import { connect } from 'dva';
 import { find } from 'lodash';
 import { FormComponentProps } from 'antd/es/form';
 import { ConnectProps, ConnectState } from '@/models/connect';
-import { TemplateModelItem } from '@/models/template';
+import { TemplateModelItem, ITabsData } from '@/models/template';
 import { ModuleType } from '../../../data';
 
 import styles from './index.less';
 
 export interface IProps extends FormComponentProps, ConnectProps {
   collectFormData: TemplateModelItem[];
+  tabKey:string
 }
 
 // const initialState = {};
@@ -20,7 +21,7 @@ interface IState {}
 class ImageAds extends PureComponent<IProps, IState> {
   render() {
     const { collectFormData } = this.props;
-    const data: TemplateModelItem | undefined = find(
+    const data: TemplateModelItem | ITabsData | undefined = find(
       collectFormData,
       item => item.type === 'image_ads',
     );
@@ -74,22 +75,17 @@ class ImageAds extends PureComponent<IProps, IState> {
   }
 }
 
-// export default Form.create()(ImageAds);
 
 export default connect(({ template }: ConnectState) => ({
   collectFormData: template.collectFormData,
 }))(
-  Form.create({
+  Form.create<IProps>({
     onFieldsChange(props, changedFields, allFields) {
-      // 表单域改变时触发actions方法，控制isEdit为true
       const { dispatch } = props;
-      // console.log(props, changedFields, allFields);
       const imageAds = {
         type: ModuleType.image_ads,
         data: {
-          // template_name: pick(allFields.template_name, ['name', 'value']),
           template_name: allFields.template_name.value,
-          // switching_interval: pick(allFields.switching_interval, ['name', 'value']),
           switching_interval: allFields.switching_interval.value,
         },
       };

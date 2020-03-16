@@ -74,7 +74,13 @@ class SelectTemplateType extends PureComponent<IProps, IState> {
   };
 
   private apply = (id: number | string, type: string) => {
-    router.push(`/template/create/${id}&&${type}`);
+    // router.push(`/template/create/${id}&&${type}`);
+    router.push({
+      pathname: `/template/create/${id}`,
+      query: {
+        type,
+      },
+    });
   };
 
   render() {
