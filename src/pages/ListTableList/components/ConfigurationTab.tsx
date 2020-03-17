@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import { Menu, Row, Col, Empty, Card } from 'antd';
 // import { IDropDataItem, DustbinState } from './data.d';
-import TemplateSettings from './components/FormCollect/TemplateSettings';
-import ModuleSetting from './components/FormCollect/ModuleSetting';
+import TemplateSettings from './FormCollect/TemplateSettings';
+import ModuleSetting from './FormCollect/ModuleSetting';
 // import { FormComponentProps } from 'antd/es/form';
 
 // import styles from './ConfigurationTab.less';

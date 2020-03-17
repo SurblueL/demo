@@ -1,5 +1,5 @@
 import { Reducer } from 'redux';
-import { concat, some, remove, cloneDeep, isArray } from 'lodash';
+import { concat, some, remove, cloneDeep } from 'lodash';
 
 // import { Effect } from 'dva';
 
@@ -12,25 +12,16 @@ export interface TemplateModelState {
  * {
  *    type:'image_ads',
  *    data:{pic:'xxx',a:'xxx',...}
- * },{
- *     type:'group',   // 拼团等有多个tab数据时的数据结构
- *      data:[
- *        {merchandiseNews:{a:'xxx',b:'xxx'}}
- *        {rules:{a:'xxx',b:'xxx'}}
- *        {registration:{a:'xxx',b:'xxx'}}
- *          ]
- * }
- * ]
- *
+ * }]
  */
 export interface TemplateModelItem {
   type: string;
   data: { [key: string]: any };
 }
-export interface ITabsData {
-  type: string;
-  data: { [key: string]: any }[];
-}
+// export interface ITabsData {
+//   type: string;
+//   data: { [key: string]: any }[];
+// }
 
 export interface TemplateType {
   namespace: 'template';
@@ -65,9 +56,6 @@ const TemplateModel: TemplateType = {
       const { collectFormData } = state;
       const newCollectFormData = cloneDeep(collectFormData);
       const isExist = some(collectFormData, ['type', payload.type]);
-      if (isArray(payload.data)) {
-        console.log(payload);
-      }
       if (isExist) {
         remove(newCollectFormData, (item: TemplateModelItem) => item.type === payload.type);
       }

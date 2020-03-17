@@ -13,8 +13,9 @@ import { RouteComponentProps } from 'react-router';
 import { ModuleData, ModulePreview, ModuleType } from './data';
 import DustbinItem from './components/DustbinItem';
 import GridBox from './components/GridBox';
-import ConfigurationTab from './ConfigurationTab';
+import ConfigurationTab from './components/ConfigurationTab';
 import { IBoxesState, IChildren, IDustbinState } from './type.d';
+import { getDefaultPreview } from './service';
 
 import styles from './index.less';
 
@@ -49,6 +50,7 @@ class CreateActive extends PureComponent<IProps, IState> {
     const query = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
     const { type } = query;
     if (type) {
+      this.getDefaultPreview(type);
       const setDustbins = update(dustbins, {
         $push: [
           {
@@ -73,23 +75,11 @@ class CreateActive extends PureComponent<IProps, IState> {
     }
   }
 
-  // private handleCollect = (collectFormData: any) => {
-  //   const { dustbins } = this.state;
-  //   dustbins.map((item: IDustbinState, index: number) => {
-  //     if (item.accept[0] === collectFormData.type) {
-  //       this.setState({
-  //         dustbins: update(dustbins, {
-  //           [index]: {
-  //             collectFormData: {
-  //               $set: item,
-  //             },
-  //           },
-  //         }),
-  //       });
-  //     }
-  //     return null;
-  //   });
-  // };
+  getDefaultPreview = (type: string) => {
+    getDefaultPreview({ type }).then(res => {
+      console.log(res);
+    });
+  };
 
   // 判断是否被拖拽过
   private isDropped = (boxType: string) => {
@@ -104,7 +94,7 @@ class CreateActive extends PureComponent<IProps, IState> {
       boxes.map((item: IBoxesState) => {
         const { title, children } = item;
         return (
-          <Card title={title} className={styles.modalGrid}>
+          <Card key={title} title={title} className={styles.modalGrid}>
             {this.setGrid(children)}
           </Card>
         );
@@ -121,6 +111,7 @@ class CreateActive extends PureComponent<IProps, IState> {
         return (
           <GridBox
             {...item}
+            key={type}
             isDropped={this.isDropped(type)}
             onDropped={() => this.onDropped(item)}
             droppedBoxTypes={droppedBoxTypes}
@@ -138,6 +129,7 @@ class CreateActive extends PureComponent<IProps, IState> {
         const { accept } = dustbinsItem;
         return (
           <DustbinItem
+            key={accept[0]}
             accept={accept}
             onDrop={item => this.handleDrop(index, item, dustbinsItem)}
             onClick={() => this.dustbinClick(index, accept[0])}
@@ -237,14 +229,16 @@ class CreateActive extends PureComponent<IProps, IState> {
 
   // 点击容器 切换当前被选中的垃圾（容器）type
   private dustbinClick = (index: number, type: string) => {
-    this.setState({
-      checkedType: type,
-    });
+    if (includes(Object.values(ModuleType), type)) {
+      this.setState({
+        checkedType: type,
+      });
+    }
   };
 
   render() {
     const { checkedType } = this.state;
-    console.log(this.props);
+    // console.log(this.props);
     return (
       <DndProvider backend={Backend}>
         <Layout className={styles.activeLayout}>

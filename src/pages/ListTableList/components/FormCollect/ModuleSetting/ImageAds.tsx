@@ -5,14 +5,13 @@ import { connect } from 'dva';
 import { find } from 'lodash';
 import { FormComponentProps } from 'antd/es/form';
 import { ConnectProps, ConnectState } from '@/models/connect';
-import { TemplateModelItem, ITabsData } from '@/models/template';
+import { TemplateModelItem } from '@/models/template';
 import { ModuleType } from '../../../data';
-
-import styles from './index.less';
+import styles from './ImageAds.less';
 
 export interface IProps extends FormComponentProps, ConnectProps {
   collectFormData: TemplateModelItem[];
-  tabKey:string
+  tabKey: string;
 }
 
 // const initialState = {};
@@ -21,7 +20,7 @@ interface IState {}
 class ImageAds extends PureComponent<IProps, IState> {
   render() {
     const { collectFormData } = this.props;
-    const data: TemplateModelItem | ITabsData | undefined = find(
+    const data: TemplateModelItem | undefined = find(
       collectFormData,
       item => item.type === 'image_ads',
     );
@@ -74,7 +73,6 @@ class ImageAds extends PureComponent<IProps, IState> {
     );
   }
 }
-
 
 export default connect(({ template }: ConnectState) => ({
   collectFormData: template.collectFormData,

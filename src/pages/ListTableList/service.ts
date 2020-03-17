@@ -17,3 +17,11 @@ export async function geTemplateInfo(params: any) {
     params,
   });
 }
+
+// 获取模板类型信息预览
+export async function getDefaultPreview(params: any) {
+  return request('/api/getDefaultPreview', {
+    method: 'GET',
+    params,
+  });
+}
